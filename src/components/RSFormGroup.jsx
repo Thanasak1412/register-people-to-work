@@ -1,6 +1,6 @@
 import { Form } from 'rsuite';
 
-export default function RSTextField({ name, label }) {
+export default function RSFormGroup({ name, label }) {
   return (
     <Form.Group controlId={name}>
       <Form.ControlLabel>{label}</Form.ControlLabel>

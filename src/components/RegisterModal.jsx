@@ -2,7 +2,7 @@ import { forwardRef, useState } from 'react';
 
 import { Button, Form, Modal, Schema } from 'rsuite';
 
-import RSTextField from './react-suite/RSTextField';
+import RSFormGroup from './RSFormGroup';
 
 const { StringType } = Schema.Types;
 const model = Schema.Model({
@@ -64,9 +64,9 @@ const RegisterModal = forwardRef(
               <Modal.Title>ลงทะเบียนคนเข้างาน</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <RSTextField name="fName" label="First Name" />
-              <RSTextField name="lName" label="Last Name" />
-              <RSTextField name="phone" label="Phone" />
+              <RSFormGroup name="fName" label="First Name" />
+              <RSFormGroup name="lName" label="Last Name" />
+              <RSFormGroup name="phone" label="Phone" />
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit">Ok</Button>
