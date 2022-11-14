@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Input } from 'rsuite';
 
-import NavigationBar from '../components/Navbar';
+import NavigationBar from '../components/NavigationBar';
 import RegisterModal from '../components/RegisterModal';
 import ReserveWork from '../components/ReserveWork';
 import TableData from '../components/TableData';
+import useAuth from '../hooks/useAuth';
+import { PATH_AUTH } from '../routes/paths';
 
-export default function Home() {
+function Home() {
   const [data, setData] = useState([]);
   const [modalBooking, setModalBooking] = useState(false);
   const positionRef = useRef('');
@@ -16,6 +19,12 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [limitPage, setLimitPage] = useState(10);
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) navigate(PATH_AUTH.login);
+  }, [isAuthenticated, navigate]);
 
   const filterLimitPage = useCallback(
     (i) => {
@@ -40,6 +49,14 @@ export default function Home() {
         .sort((a, b) => {
           let x = a[sortColumn];
           let y = b[sortColumn];
+
+          if (!isNaN(x)) {
+            x = x * 1;
+          }
+
+          if (!isNaN(y)) {
+            y = y * 1;
+          }
 
           if (typeof x === 'string') {
             x = x.charCodeAt();
@@ -121,12 +138,16 @@ export default function Home() {
     filterLimitPage();
   }, [filterLimitPage]);
 
+  const checkReserved = (userId) => {
+    return data.find((user) => Number(user.userId) === Number(userId));
+  };
+
   return (
     <>
       <NavigationBar />
-      <div className="container mx-auto mt-16">
-        <div className="flex gap-4">
-          <div className="flex-2">
+      <div className="container mx-auto mt-16 h-96">
+        <div className="w-full flex flex-col-reverse gap-4 md:flex-col-reverse lg:flex-row sm:flex-col-reverse">
+          <div className="flex-1 md:flex-2 lg:flex-2">
             {/* SEARCH && TABLE */}
             <Input
               type="text"
@@ -149,12 +170,13 @@ export default function Home() {
               onChangeLimit={onChangeLimit}
             />
           </div>
-          <div className="flex-1 bg-[#F0F0F7] rounded-2xl h-100">
-            <div className="grid grid-cols-8 gap-2 p-5 pr-0">
+          <div className="flex-1 bg-[#F0F0F7] rounded-2xl h-100 min-w-fit md:p-0">
+            <div className="grid grid-cols-8 gap-2 p-5 lg:pr-0 md:pr-5 md:mx-0">
               {/* RESERVED WORK */}
               <ReserveWork
                 data={data}
                 onOpenModalBooking={onOpenModalBooking}
+                checkReserved={checkReserved}
               />
             </div>
           </div>
@@ -163,9 +185,13 @@ export default function Home() {
           open={modalBooking}
           onCloseModalBooking={onCloseModalBooking}
           setData={setData}
+          data={data}
           ref={positionRef}
+          checkReserved={checkReserved}
         />
       </div>
     </>
   );
 }
+
+export default Home;

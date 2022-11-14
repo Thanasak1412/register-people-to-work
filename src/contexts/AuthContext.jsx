@@ -2,8 +2,6 @@ import { createContext, useReducer } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { PATH_AUTH } from '../routes/paths';
-
 const initialState = {
   isAuthenticated: false,
   user: null,
@@ -11,7 +9,7 @@ const initialState = {
 
 const handlers = {
   LOGIN: (state, action) => {
-    const { user } = action.payload;
+    const user = action.payload;
 
     return {
       ...state,
@@ -42,14 +40,7 @@ AuthProvider.propTypes = {
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const login = (userId, fName, lName, phone) => {
-    const user = {
-      userId,
-      fName,
-      lName,
-      phone,
-    };
-
+  const login = (user) => {
     dispatch({
       type: 'LOGIN',
       payload: user,

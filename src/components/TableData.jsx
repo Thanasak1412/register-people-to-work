@@ -15,29 +15,31 @@ export default function TableData({
   onChangeLimit,
 }) {
   return (
-    <>
+    <div className="rs-user-table">
       <Table
-        height={420}
-        width={600}
+        autoHeight
+        affixHeader
+        affixHorizontalScrollbar
         data={onSearchUser(searchData)}
         sortColumn={sortTable.sortColumn}
         sortType={sortTable.sortType}
         onSortColumn={onSortColumn}
         loading={isLoading}
+        width={600}
       >
-        <Column width={80} sortable>
+        <Column sortable>
           <HeaderCell>No</HeaderCell>
           <Cell dataKey="userId" />
         </Column>
-        <Column width={120} sortable>
+        <Column minWidth={100} sortable>
           <HeaderCell>First Name</HeaderCell>
           <Cell dataKey="fName" />
         </Column>
-        <Column width={120} sortable>
+        <Column width={100} sortable>
           <HeaderCell>Last Name</HeaderCell>
           <Cell dataKey="lName" />
         </Column>
-        <Column width={270} sortable>
+        <Column width={250} sortable>
           <HeaderCell className="text-center">Phone</HeaderCell>
           <Cell dataKey="phone" />
         </Column>
@@ -60,6 +62,6 @@ export default function TableData({
           limitOptions={[10, 30, 50, 100]}
         />
       </div>
-    </>
+    </div>
   );
 }

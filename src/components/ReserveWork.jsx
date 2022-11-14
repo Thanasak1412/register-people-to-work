@@ -1,10 +1,23 @@
+import { useNavigate } from 'react-router-dom';
 import { ExpandOutline, UserInfo } from '@rsuite/icons';
 import { Button } from 'rsuite';
+
+import useAuth from '../hooks/useAuth';
 import { mockUsers } from '../_mock/_user';
+import { ROLE_ADMIN } from '../constants';
+import { useEffect } from 'react';
+import { PATH_AUTH } from '../routes/paths';
 
 const defaultData = mockUsers(100);
 
-export default function ReserveWork({ data, onOpenModalBooking }) {
+export default function ReserveWork({ onOpenModalBooking, checkReserved }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) navigate(PATH_AUTH.login);
+  }, [navigate, user]);
+
   return (
     <>
       {defaultData.map((_data) => (
@@ -13,8 +26,13 @@ export default function ReserveWork({ data, onOpenModalBooking }) {
             appearance="default"
             id={_data.userId}
             onClick={onOpenModalBooking}
+            disabled={
+              !!user &&
+              user.role !== ROLE_ADMIN &&
+              !!checkReserved(_data.userId)
+            }
           >
-            {!!data.find((user) => Number(user.userId) === _data.userId) ? (
+            {checkReserved(_data.userId) ? (
               <UserInfo className="w-5 h-5" />
             ) : (
               <ExpandOutline className="w-5 h-5" />

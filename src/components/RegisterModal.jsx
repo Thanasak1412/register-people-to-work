@@ -1,31 +1,11 @@
 import { forwardRef, useState } from 'react';
 
-import { Button, Form, Modal, Schema } from 'rsuite';
+import { Button, Form, Modal } from 'rsuite';
 
+import { ROLE_ADMIN } from '../constants';
+import useAuth from '../hooks/useAuth';
+import { model } from '../schemas/Register';
 import RSFormGroup from './RSFormGroup';
-
-const { StringType } = Schema.Types;
-const model = Schema.Model({
-  fName: StringType().isRequired('This field is required.'),
-  lName: StringType().isRequired('This field is required.'),
-  phone: StringType()
-    .addRule((value) => {
-      return asyncCheckPhone(value);
-    }, 'Duplicate name')
-    .isRequired('This field is required.'),
-});
-
-function asyncCheckPhone(phone) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (phone === '0123456789') {
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
-}
 
 const defaultFormValue = {
   fName: '',
@@ -35,9 +15,10 @@ const defaultFormValue = {
 };
 
 const RegisterModal = forwardRef(
-  ({ open, onCloseModalBooking, setData }, ref) => {
+  ({ open, onCloseModalBooking, setData, checkReserved, data }, ref) => {
     const [formValue, setFormValue] = useState(defaultFormValue);
     const position = ref.current;
+    const { user } = useAuth();
 
     const onChange = (e) => {
       if (e !== '') setFormValue(e);
@@ -45,9 +26,28 @@ const RegisterModal = forwardRef(
     };
 
     const onSubmit = () => {
-      setData((prev) => [...prev, formValue]);
-      setFormValue(defaultFormValue);
+      const userWithPosition = checkReserved(formValue.userId);
+      const idxReserved = data.findIndex(
+        (user) =>
+          user.fName === formValue.fName && user.lName === formValue.lName
+      );
+      const idxNotFound = -1;
+
+      if (user.role === ROLE_ADMIN && !!userWithPosition) {
+        setData((prev) => [
+          ...prev.map((user) =>
+            user.userId === userWithPosition.userId ? formValue : user
+          ),
+        ]);
+      } else if (idxReserved !== idxNotFound) {
+        data.splice(idxReserved, 1, formValue);
+        setData(data);
+      } else {
+        setData((prev) => [...prev, formValue]);
+      }
+
       onCloseModalBooking();
+      setFormValue(defaultFormValue);
     };
 
     return (

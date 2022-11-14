@@ -21,10 +21,6 @@ export default function Router() {
           path: 'login',
           element: <Login />,
         },
-        {
-          path: 'register',
-          element: <Register />,
-        },
       ],
     },
 
@@ -39,7 +35,6 @@ export default function Router() {
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
-const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 
 // MAIN
 const Home = Loadable(lazy(() => import('../pages/Home')));
